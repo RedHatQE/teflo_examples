@@ -3,7 +3,7 @@ description: "Resource check"
 
 resource_check:
   {% if semaphore_services is defined %} 
-  service:
+  monitored_services:
     {% for item in semaphore_services.split(',') %}
     - {{ item }}
     {% endfor %}
