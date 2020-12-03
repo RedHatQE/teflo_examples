@@ -1,6 +1,6 @@
 ---
 # Due to a recent bug bools and lists have to be defined as strings
-# This will be resolved in a future release of Carbon
+# This will be resolved in a future release of Teflo
 enable_notification: 'true'
 to_address: tester@redhat.com
 from_address: ci-qe@redhat.com

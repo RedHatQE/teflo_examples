@@ -3,11 +3,11 @@
 ## Installation
 
 To utilize this example you must install teflo. You can refer to our 
-[installation](https://docs.engineering.redhat.com/display/CentralCI/Install+Carbon) page 
+[installation](https://docs.engineering.redhat.com/display/CentralCI/Install+Teflo) page 
 
 
 ## Usage
-This example is meant to show how to use Carbon's resource check can be used to check the status of 
+This example is meant to show how to use Teflo's resource check can be used to check the status of 
 systems/services that are monitored by Semaphore as well as system/services not monitored by Semaphore. 
 
 Below is the contents of this resource check example directory
@@ -24,11 +24,11 @@ Below is the contents of this resource check example directory
 └── validate.yml
 ```
 
-The key file is the [validate.yml](validate.yml) which is a Carbon scenario descriptor file (later on 
+The key file is the [validate.yml](validate.yml) which is a Teflo scenario descriptor file (later on 
 it might be referred to as SDF). This defines two sections, **resource_check** and **notifications**. 
 
 ### Resource Check 
-The **resource_check** section defines what Carbon should check for.  
+The **resource_check** section defines what Teflo should check for.  
  
  * The *service* key takes a list services/systems being monitored by a status page like semaphore
  
@@ -36,7 +36,7 @@ The **resource_check** section defines what Carbon should check for.
    that defines a simple uri check for services/systems NOT being monitored by semaphore
    
 ### Notification
-The **notification** section describes what and who Carbon should notify a particular trigger or state. This
+The **notification** section describes what and who Teflo should notify a particular trigger or state. This
 is optional. This was included as a nice way to alert you of in case any of the validation failed. It uses
 a [notification template](notification_templates/resource_check_failure.tmpl) which extracts the services 
 being checked in the scenario descriptor file and injects them into the template. 

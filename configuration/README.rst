@@ -25,7 +25,7 @@ docs.ansible.com/ansible/latest/installation_guide/intro_configuration.html>`_
 teflo
 ------
 
-Carbon requires you to create a configuration file to control various settings
+Teflo requires you to create a configuration file to control various settings
 teflo needs. This is where you can define default settings teflo accepts,
 provider credentials, orchestrator settings and much more. Please see the
 `teflo <teflo>`_ directory for a sample teflo configuration file. The
