@@ -2,7 +2,7 @@ Hello All,
 
 One of the resource checks has failed:
 {% for res, checks in scenario.resource_check.iteritems() %}
-  {% if res == 'service' %}
+  {% if res == 'monitored_services' %}
     {% for check in checks %}
 - {{ check }}
     {% endfor %}
