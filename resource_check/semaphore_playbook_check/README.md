@@ -30,7 +30,7 @@ it might be referred to as SDF). This defines two sections, **resource_check** a
 ### Resource Check 
 The **resource_check** section defines what Teflo should check for.  
  
- * The *service* key takes a list services/systems being monitored by a status page like semaphore
+ * The *monitored_services* key takes a list services/systems being monitored by a status page like semaphore
  
  * The *playbook* key takes a path to a playbook, [non_semaphore_check.yml](custom_res_checks/non_semaphore_check.yml), 
    that defines a simple uri check for services/systems NOT being monitored by semaphore
