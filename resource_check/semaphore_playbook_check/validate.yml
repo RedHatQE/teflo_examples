@@ -1,0 +1,36 @@
+name: resource_check
+description: "Resource check"
+
+resource_check:
+  {% if semaphore_services is defined %} 
+  service:
+    {% for item in semaphore_services.split(',') %}
+    - {{ item }}
+    {% endfor %}
+  {% endif %}
+  playbook:
+    - name: custom_res_checks/non_semaphore_check.yml
+      ansible_options:
+        extra_vars:
+          file: custom_res_checks/ans_vars.yml
+
+notifications:
+  - name: failed_res_check
+    notifier: email-notifier
+    credential: smtp
+    {% if enable_notification == 'true' %}
+    on_demand: true
+    {% else %}
+    on_failure: true
+    {% endif %}
+    on_tasks:
+      - validate
+    to:
+    {% if to_address %}
+      {% for addy in to_address.split(',') %}
+    - {{ addy }}
+      {% endfor %}
+    {% endif %}
+    from: {{ from_address }}
+    subject: Failed to validate resources
+    message_template: notification_templates/resource_check_failure.tmpl

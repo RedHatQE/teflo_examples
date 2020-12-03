@@ -1,0 +1,10 @@
+---
+- name: post tasks prior to deleting product a host
+  hosts: "{{ hosts }}"
+
+  tasks:
+    - name: remove product a custom fact
+      file:
+        path: "/etc/ansible/facts.d/product_a.fact"
+        state: absent
+      become: true

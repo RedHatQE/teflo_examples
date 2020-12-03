@@ -1,0 +1,12 @@
+---
+- name: print system information
+  hosts: "{{ hosts }}"
+
+  tasks:
+    - name: get system information
+      shell: 'uname -a'
+      register: sys_info
+
+    - name: print system information
+      debug:
+        var: sys_info

@@ -1,0 +1,22 @@
+---
+
+name: orchestrate example
+description: orchestrate example using local host
+
+provision:
+  - name: localhost
+    role: local
+    ip_address: 127.0.0.1
+    ansible_params:
+      ansible_connection: local
+
+execute:
+  - name: run test suite
+    description: "Run all tests within the test suite."
+    executor: runner
+    hosts: localhost
+    shell:
+      - command: "env > /tmp/tc01.log"
+        chdir: /tmp
+    artifacts:
+      - /tmp/tc01.log

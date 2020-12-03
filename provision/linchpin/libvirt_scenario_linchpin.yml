@@ -1,0 +1,41 @@
+---
+
+name: libvirt resources
+description: define a teflo libvirt network and host resource to be provisioned
+
+provision:
+  - name: test_libvirt_net
+    groups: network
+    provisioner: linchpin-wrapper
+    provider:
+      name: libvirt
+      credential: libvirt-creds
+      role: libvirt_network
+      uri: qemu:///system
+      bridge: test_libvirt_net
+      forward_mode: nat
+      ip: 192.168.123.1
+      dhcp_start: 192.168.123.100
+      dhcp_end: 192.168.123.150
+      delete_on_destroy: yes
+
+  - name: test_libvirt_vm
+    groups: client
+    provisioner: linchpin-wrapper
+    provider:
+      name: libvirt
+      credential: libvirt-creds
+      role: libvirt_node
+      vcpus: 2
+      memory: 1024
+      uri: qemu:///system
+      image_src: http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2
+      ssh_key: teflo
+      libvirt_become: no
+      libvirt_image_path: ~/libvirt/images/
+      networks:
+        - name: test_libvirt_net
+    ansible_params:
+      ansible_user: centos
+      ansible_ssh_private_key_file: keys/teflo
+

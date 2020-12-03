@@ -1,0 +1,24 @@
+---
+
+name: beaker resource
+description: define a teflo host beaker resource to be provisioned
+
+provision:
+  - name: beaker-node
+    role: node
+    provider:
+      name: beaker
+      credential: beaker-creds
+      arch: x86_64
+      distro: RHEL-7.5
+      variant: Server
+      whiteboard: teflo beaker resource example
+      jobgroup: '{{ jobgroup }}'
+      username: '{{ username }}'
+      password: '{{ password }}'
+      host_requires_options:
+        - "force={{ host_fqdn }}"
+      ssh_key: keys/demo
+    ansible_params:
+      ansible_user: root
+      ansible_ssh_private_key_file: keys/demo

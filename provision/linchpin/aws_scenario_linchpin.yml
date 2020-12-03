@@ -1,0 +1,32 @@
+---
+
+name: aws resources
+description: define a teflo aws ssh keypair and ec2 resource to be provisioned
+
+provision:
+
+  - name: test_aws_key_pair
+    role: client, test_driver
+    provisioner: linchpin-wrapper
+    provider:
+      name: aws
+      credential: aws-creds
+      role: aws_ec2_key
+      region: "{{ region | default('us-east-2') }}"
+
+  - name: test_ci_test_client_a
+    role: client, test_driver
+    provisioner: linchpin-wrapper
+    provider:
+      name: aws
+      credential: aws-creds
+      flavor: t2.nano
+      role: aws_ec2
+      region: {{ region | default('us-east-2') }}
+      image: {{ image | default('ami-0200c593f80612761') }}
+      count: 1
+      keypair: {{ keypair | default('test_aws_key_pair') }}
+    ansible_params:
+      ansible_user: centos
+      ansible_ssh_private_key_file: keys/test_aws_key_pair.pem
+

@@ -1,0 +1,13 @@
+---
+- name: check if bugzilla or other web services are up and running
+  hosts: localhost
+  gather_facts: false
+  
+  tasks:
+  - name: check web response
+    uri:  
+      url: "{{ item }}"
+    loop: "{{ service_urls | default([]) }}"
+
+  
+

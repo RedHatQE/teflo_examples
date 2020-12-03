@@ -1,0 +1,10 @@
+---
+- name: install product b using endpoint from product a
+  hosts: "{{ hosts }}"
+
+  tasks:
+    - name: install product b
+      debug:
+        msg: >
+          Installing product b using product a endpoint
+          {{ ansible_local.product_a.endpoint }}

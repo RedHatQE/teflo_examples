@@ -1,0 +1,32 @@
+---
+- name: mock install product a
+  hosts: "{{ hosts }}"
+
+  vars:
+    custom_facts_dir: "/etc/ansible/facts.d"
+
+  tasks:
+    - name: install product a (fake)
+      debug:
+        msg: "product a successfully installed!"
+
+    - name: set product a endpoint
+      set_fact:
+        product_a_endpoint: "https://{{ ansible_lo.ipv4.address }}/login"
+
+    - name: print product a endpoint
+      debug:
+        var: product_a_endpoint
+
+    - name: create custom facts directory
+      file:
+        state: directory
+        recurse: true
+        path: "{{ custom_facts_dir }}"
+      become: true
+
+    - name: set product a endpoint for later use outside this plays scope
+      copy:
+        content: "{'endpoint': '{{ product_a_endpoint }}'}"
+        dest: "{{ custom_facts_dir }}/product_a.fact"
+      become: true

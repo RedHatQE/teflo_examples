@@ -1,0 +1,23 @@
+---
+
+name: beaker resource
+description: define a teflo host beaker resource to be provisioned using Linchpin
+
+provision:
+  - name: beaker-node
+    role: node
+    provisioner: linchpin-wrapper
+    provider:
+      name: beaker
+      credential: beaker-creds
+      arch: x86_64
+      distro: RHEL-7.5
+      variant: Server
+      whiteboard: teflo beaker resource example
+      job_group: '{{ jobgroup }}'
+      hostrequires:
+        - force: {{ host_fqdn }}
+      ssh_key: [keys/demo]
+    ansible_params:
+      ansible_user: root
+      ansible_ssh_private_key_file: keys/demo

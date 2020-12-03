@@ -1,0 +1,212 @@
+---
+
+# template used to demonstrate the layout of a multi product (interop)
+# scenario definition consumable by the interop framework in this case
+# teflo.
+
+# generic section
+# defines common information about the scenario
+
+name: demo
+description: >
+    Scenario to demonstration the teflo framework.
+
+# resource checking section
+# As part of the validation that teflo performs, it can also
+# check the status of resources that an end to end scenario
+# relies on.  The user can set a list of resources to check.
+#
+# Note: these dependencies will only be validated if you
+# set the resource_check_endpoint key in your teflo.cfg file
+#
+# internally, most likely Semaphore will be used:
+# in teflo.cfg add:
+# [defaults]
+# resource_check_endpoint=https://semaphore.cloud.upshift.engineering.redhat.com/api/v1
+
+# the following is a list of some resources that Semaphore
+# allows you to check:
+
+resource_check:
+  - ci-rhos
+  - brew
+  - polarion
+  - umb
+  - errata
+  - rdo-cloud
+  - covscan
+  - rpmdiff
+  - gerrit.host.prod.eng.bos.redhat.com
+  - code.engineering.redhat.com
+
+# provision section
+# defines all systems required for the scenario
+
+# note:
+# ----
+# the defined definition below is active and supported by teflo framework
+
+provision:
+  # test driver
+  - name: testdriver                            # machine name used for creation
+    description: "test driver"                  # describes the purpose of the host
+    provider:
+      name: openstack                           # provider to create host in
+      credential: openstack                     # ref above ^^: credentials.openstack
+      image: rhel-7.5-server-x86_64-released    # qcow image to boot instance based on
+      flavor: m1.small                          # instance size
+      networks:                                 # instance internal network
+        - <internal-network>
+      floating_ip_pool: "10.8.240.0"            # instance external network
+      keypair: <keypair>                        # instance ssh key pair
+    role: testdriver                            # host role
+    ansible_params:                             # defines ansible parameters for connection
+      ansible_user: root
+      ansible_ssh_private_key_file: <private-key-filename>
+
+  # test client 1
+  - name: testclient01                          # machine name used for creation
+    description: "test client 01"               # describes the purpose of the host
+    provider:
+      name: openstack                           # provider to create host in
+      credential: openstack                     # ref above ^^: credentials.openstack
+      image: rhel-7.5-server-x86_64-released    # qcow image to boot instance based on
+      flavor: m1.small                          # instance size
+      networks:                                 # instance internal network
+        - <internal-network>
+      floating_ip_pool: "10.8.240.0"            # instance external network
+      keypair: <keypair>                        # instance ssh key pair
+    role: testclient                            # host role
+    ansible_params:                             # defines ansible parameters for connection
+      ansible_user: root
+      ansible_ssh_private_key_file: <private-key-filename>
+
+  # test client 2, defining a static machine
+  # this is useful if you wish to skip teflo's provisioning
+  # this machine can be referenced in orchestrate and execute
+  - name: testclient02                          # machine name used for creation
+    description: "test client 02"               # describes the purpose of the host
+    ip_address: <machine_ip_address>
+    role: testclient                            # host role
+    ansible_params:                             # defines ansible parameters for connection
+      ansible_user: root
+      ansible_ssh_private_key_file: <private-key-filename>
+
+
+# orchestrate section
+# defines all actions to be performed for the scenario. these actions will be
+# executed against the systems defined in the provision section. Each action
+# will define which system to run against.
+
+# note:
+# ----
+# the defined definition below is active and supported by teflo framework
+
+orchestrate:
+  # user defined playbook to execute
+  - name: custom.yml                            # action name (playbook name) (full filename
+                                                # and path relative to the workspace)
+    description: "performs custom config"       # describes what is being performed on the hosts
+    orchestrator: ansible                       # orchestrator module to use in this case ansible
+    hosts:                                      # hosts which the action is executed on
+      - testclient01                            # ref above ^^: provision.testclient01
+      - testclient02                            # ref above ^^: provision.testclient02
+    ansible_options:                            # options used by ansible orchestrator
+      extra_vars:
+        var01: value01
+    ansible_galaxy_options:                     # options used by ansible galaxy
+      role_file: role.yml
+
+  # create ssh key pair for ssh connection between driver/client(s)
+  - name: create_ssh_keypair.yml                 # action name (playbook name) (full filename
+                                                 # and path relative to the workspace)
+    description: "creates ssh key pair for auth" # describes what is being performed on the hosts
+    orchestrator: ansible                        # orchestrator module to use in this case ansible
+    hosts:                                       # hosts which the action is executed on
+      - testdriver                               # ref above ^^: provision.testdriver
+    ansible_options:                             # options used by ansible orchestrator
+      extra_vars:
+        user: root
+
+  # inject driver ssh public key pair to client(s)
+  - name: inject_pub_key.yml                    # action name (playbook name) (full filename
+                                                # and path relative to the workspace)
+    description: "injects ssh keys into sut"    # describes what is being performed on the hosts
+    orchestrator: ansible                       # orchestrator module to use in this case ansible
+    hosts:                                      # hosts which the action is executed on
+      - testdriver                              # ref above ^^: provision.testdriver
+    ansible_options:                            # options used by ansible orchestrator
+      extra_vars:
+        user: root
+        machine:
+          - testclient01
+          - testclient02
+
+  - name: rhn_subscribe.yml                     # action name (playbook name) (full filename
+                                                # and path relative to the workspace)
+    description: "subscribe to rhsm"            # describes what is being performed on the hosts
+    orchestrator: ansible                       # orchestrator module to use in this case ansible
+    hosts:                                      # hosts which the action is executed on
+      - all                                     # ref above ^^ to all hosts : provision.*
+    ansible_options:                            # options used by ansible orchestrator
+      extra_vars:
+        rhn_hostname: subscription.rhsm.stage.redhat.com
+        rhn_user: rhel_server_01
+        rhn_password: password
+        auto: True
+
+# execute section
+# defines all the tests to be executed for the scenario
+# Each execute task has an option to clone a git,
+# where the tests resides if not done in orchestrate
+# Then, three types of execution supported by the default executor (runner):
+# 1. shell
+# 2. script
+# 3. playbook
+# One must be selected
+# Finally, each task has an optional artifacts key used for
+# data gathering after the test execution.
+
+execute:
+  - name: test suite 01
+    description: "execute tests against test clients"
+    executor: runner
+    hosts: driver
+    git:
+      - repo: https://server.com/myproject.git
+        version: test-ver-0.1
+        dest: /tmp
+    shell:
+      - chdir: /tmp
+        command: /usr/bin/restraint --host 1={{testclient01}}:8081 --job foo.xml
+    artifacts: retraint-*, test.log
+
+  - name: test suite 02
+    description: "execute tests against test clients"
+    executor: runner
+    hosts: driver
+    git:
+      - repo: https://server.com/myproject.git
+        version: test-ver-0.1
+        dest: /tmp
+    script:
+      - chdir: /tmp
+        name: tests.sh arg1 arg2
+    artifacts: retraint-*, test.log
+
+  - name: test suite 03
+    description: "execute tests against test clients"
+    executor: runner
+    hosts: driver
+    git:
+      - repo: https://server.com/myproject.git
+        version: test-ver-0.1
+        dest: /tmp
+    playbook:
+      - chdir: /tmp
+        name: test.yml
+    artifacts: retraint-*, test.log
+
+# report section, coming soon, currently not defined
+
+report:

@@ -1,0 +1,23 @@
+Hello All,
+
+One of the resource checks has failed:
+{% for res, checks in scenario.resource_check.iteritems() %}
+  {% if res == 'service' %}
+    {% for check in checks %}
+- {{ check }}
+    {% endfor %}
+  {% elif res == 'playbook' %}
+    {% for check in checks %}
+- {{ check.name }}
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+
+{% for key, value in scenario.config.iteritems() %}
+  {% if key == 'RESOURCE_CHECK_ENDPOINT' %}
+Please check semaphore for further investigation {{ value[:-7] }}
+  {% endif %}
+{% endfor %}
+
+Thank you!
+         

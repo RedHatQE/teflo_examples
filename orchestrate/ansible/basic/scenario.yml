@@ -1,0 +1,27 @@
+---
+
+name: orchestrate example
+description: orchestrate example using local host
+
+provision:
+  - name: localhost
+    role: local
+    ip_address: 127.0.0.1
+    ansible_params:
+      ansible_connection: local
+
+orchestrate:
+  - name: ansible/system_info.yml
+    description: "Print system information."
+    orchestrator: ansible
+    hosts: localhost
+    cleanup:
+      name: ansible/system_info.yml
+      description: "Print system information post execution."
+      orchestrator: ansible
+      hosts: localhost
+
+  - name: ansible/mock_kernel_update.yml
+    description: "Mock aka fake a kernel update"
+    orchestrator: ansible
+    hosts: localhost
