@@ -11,17 +11,23 @@ provision:
       ansible_connection: local
 
 orchestrate:
-  - name: ansible/system_info.yml
+  - name: orc_task1
     description: "Print system information."
     orchestrator: ansible
     hosts: localhost
-    cleanup:
+    ansible_playbook:
       name: ansible/system_info.yml
+    cleanup:
+      name: cleanup_playbook
       description: "Print system information post execution."
       orchestrator: ansible
       hosts: localhost
+      ansible_playbook:
+        name: ansible/system_info.yml
 
-  - name: ansible/mock_kernel_update.yml
+  - name: orc_task2
     description: "Mock aka fake a kernel update"
     orchestrator: ansible
     hosts: localhost
+    ansible_playbook:
+      name: ansible/mock_kernel_update.yml
