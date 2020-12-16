@@ -11,17 +11,22 @@ provision:
       ansible_connection: local
 
 orchestrate:
-  - name: ansible/install_product_a.yml
+  - name: orc_task1
     description: "Install product a."
     orchestrator: ansible
     hosts: localhost
+    ansible_playbook:
+      name: ansible/install_product_a.yml
     cleanup:
       name: ansible/post_product_a_install.yml
       description: "Perform post product a tasks prior to deleting host."
       orchestrator: ansible
       hosts: localhost
 
-  - name: ansible/install_product_b.yml
+  - name: orc_task2
     description: "Install product b using data from product a."
     orchestrator: ansible
     hosts: localhost
+     ansible_playbook:
+       name: ansible/install_product_b.yml
+    
