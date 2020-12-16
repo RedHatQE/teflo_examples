@@ -1,0 +1,6 @@
+---
+- name: install internal certificates
+  hosts: "{{ hosts }}"
+
+  roles:
+    - role: install-certs

@@ -1,0 +1,103 @@
+---
+name: JUNIT-EXAMPLE
+description: An example scenario for junit
+
+provision:
+  - name: test_client_a
+    role: client
+    provider:
+      name: openstack
+      credential: openstack
+      image: rhel-7.4-server-x86_64-released
+      flavor: m1.small
+      networks:
+        - "{{ OS_NETWORK }}"
+      floating_ip_pool: "{{ OS_FLOATING_IP_POOL }}"
+      keypair: "{{ OS_KEYPAIR }}"
+    ansible_params:
+      ansible_user: cloud-user
+      ansible_ssh_private_key_file: "keys/{{ OS_KEYPAIR }}"
+
+  - name: test_client_b
+    role: client
+    provider:
+      name: openstack
+      credential: openstack
+      image: rhel-7.5-server-x86_64-released
+      flavor: m1.small
+      networks:
+        - "{{ OS_NETWORK }}"
+      floating_ip_pool: "{{ OS_FLOATING_IP_POOL }}"
+      keypair: "{{ OS_KEYPAIR }}"
+    ansible_params:
+      ansible_user: cloud-user
+      ansible_ssh_private_key_file: "keys/{{ OS_KEYPAIR }}"
+
+
+orchestrate:
+  - name: task1
+    description: "enable system repositories for test client a"
+    orchestrator: ansible
+    hosts: test_client_a
+    ansible_playbook:
+      name: ansible/install-repos.yml
+    ansible_options:
+      extra_vars:
+        baseurl: http://download.eng.bos.redhat.com/composes/released/RHEL-7/7.4/Server/x86_64/os/
+      become_user: root
+      become: True
+      become_method: sudo
+    ansible_galaxy_options:
+      role_file: roles.yml
+
+  - name: task2
+    description: "enable system repositories for test client b"
+    orchestrator: ansible
+    hosts: test_client_b
+    ansible_playbook:
+      name: ansible/install-repos.yml
+    ansible_options:
+      extra_vars:
+        baseurl: http://download.eng.bos.redhat.com/composes/released/RHEL-7/7.5/Server/x86_64/os/
+      become_user: root
+      become: True
+      become_method: sudo
+    ansible_galaxy_options:
+      role_file: roles.yml
+
+  - name: task3
+    description: "install internal certificates"
+    orchestrator: ansible
+    hosts: client
+    ansible_playbook:
+      name: ansible/install-certs.yml
+    ansible_galaxy_options:
+      role_file: roles.yml
+
+  - name: task4
+    description: "install junit framework on test clients"
+    orchestrator: ansible
+    hosts: client
+    ansible_playbook:
+      name: ansible/junit-install.yml
+    ansible_galaxy_options:
+      role_file: roles.yml
+
+execute:
+  - hosts:
+    - client
+    name: junitTestRun
+    executor: runner
+    description: execute junit test on client
+    git:
+      - repo: https://gitlab.cee.redhat.com/ccit/teflo/junit-example.git
+        version: master
+        dest: /home/cloud-user/junit
+    shell:
+      - chdir: /home/cloud-user/junit/tests
+        command: javac Sample.java; javac UnitTestRunner.java; javac CustomExecutionListener.java; javac SampleTest.java; java UnitTestRunner SampleTest
+    artifacts:
+      - /home/cloud-user/junit/tests/*.log
+      - /home/cloud-user/junit/tests/*.xml
+
+report:

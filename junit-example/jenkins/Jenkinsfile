@@ -1,0 +1,173 @@
+// defaults
+dataFolder = ".teflo"
+scenarioFileLts = "${dataFolder}/.results/results.yml"
+workspace = "."
+archive = ".teflo/**"
+scenarioDescriptor = "scenario.yml"
+
+def installTeflo(String branch) {
+    echo "Installing teflo.."
+
+    sh """
+    virtualenv cbn
+    source cbn/bin/activate
+    pip freeze
+    pip freeze
+    pip install git+https://github.com/RedHatQE/teflo.git@${branch}
+    teflo --version
+    """
+}
+
+def cloneScenarioRepo(String url, String branch) {
+    echo "Cloning scenario repo.."
+
+    checkout([
+        $class: 'GitSCM',
+        branches: [[name: "${branch}"]],
+        doGenerateSubModuleConfigurations: false,
+        submoduleCfg: [],
+        userRemoteConfigs: [[
+            url: "${url}"
+        ]]
+    ])
+}
+
+def teflo(String task, String scenario, String dataFolder, String workspace) {
+    echo "Starting teflo.."
+
+    sh """
+    virtualenv --system-site-packages cbn
+    source cbn/bin/activate
+    teflo run -t ${task} \
+    -s ${scenario} \
+    -d ${dataFolder} \
+    -w ${workspace} \
+    --log-level ${LOG_LEVEL}
+    """
+}
+
+def tefloCleanup(String teardown) {
+    if (teardown == 'true') {
+        teflo('cleanup', scenarioFileLts, dataFolder, workspace)
+    }
+}
+
+def setKeysPermissions() {
+    try {
+        sh "rsync -aq ${SSH_KEYS_DIR}/* keys/"
+        sh "chmod 0600 keys/*"
+    } catch (Exception) {
+        echo "No keys to set permissions for, continuing on.."
+    }
+}
+
+def archiveArtifacts() {
+    archiveArtifacts artifacts: archive
+}
+
+pipeline {
+    agent { label "${AGENT}" }
+
+    stages {
+        stage('env') {
+            steps {
+                // always clean workspace
+                cleanWs()
+
+                // clone interoperability scenario files
+                cloneScenarioRepo("${SCENARIO_REPO_URL}", "${SCENARIO_REPO_BRANCH}")
+
+                // install teflo
+                installTeflo("${TEFLO_BRANCH}")
+
+                // set file permissions on SSH keys, this scenarios keys are
+                // located in a keys directory at the root of the scenario
+                setKeysPermissions()
+            }
+        }
+        stage('validate') {
+            steps {
+                // call teflo validate task
+                teflo('validate', scenarioDescriptor, dataFolder, workspace)
+            }
+            post {
+                always {
+                    // archive runtime artifacts
+                    script { archiveArtifacts() }
+                }
+            }
+        }
+        stage('provision') {
+            steps {
+                // call teflo provision task
+                teflo('provision', scenarioDescriptor, dataFolder, workspace)
+            }
+            post {
+                always {
+                    // archive runtime artifacts
+                    script { archiveArtifacts() }
+                }
+            }
+        }
+        stage('orchestrate') {
+            steps {
+                // call teflo orchestrate task
+                teflo('orchestrate', scenarioFileLts, dataFolder, workspace)
+            }
+            post {
+                always {
+                    // archive runtime artifacts
+                    script { archiveArtifacts() }
+                }
+                failure {
+                    // call teflo cleanup task on failure
+                    script { tefloCleanup("${TEARDOWN}") }
+                }
+            }
+        }
+        stage('execute') {
+            steps {
+                // call teflo execute task
+                teflo('execute', scenarioFileLts, dataFolder, workspace)
+            }
+            post {
+                always {
+                    // archive runtime artifacts
+                    script { archiveArtifacts() }
+                }
+                failure {
+                    // call teflo cleanup task on failure
+                    script { tefloCleanup("${TEARDOWN}") }
+                }
+            }
+        }
+        stage('report') {
+            steps {
+                // call teflo report task
+                echo 'teflo report'
+            }
+            post {
+                always {
+                    // archive runtime artifacts
+                    script { archiveArtifacts() }
+                }
+                failure {
+                    // call teflo cleanup task on failure
+                    script { tefloCleanup("${TEARDOWN}") }
+                }
+            }
+        }
+        stage('cleanup') {
+            steps {
+                // call teflo cleanup task
+                script { tefloCleanup("${TEARDOWN}") }
+            }
+            post {
+                always {
+                    // archive runtime artifacts
+                    script { archiveArtifacts() }
+                }
+            }
+        }
+    }
+}

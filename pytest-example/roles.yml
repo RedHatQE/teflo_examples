@@ -1,0 +1,10 @@
+---
+- src: oasis_roles.rhsm
+
+- src: oasis_roles.system_repositories
+
+- src: https://gitlab.cee.redhat.com/PIT/roles/pytest-install.git
+  scm: git
+
+- src: https://gitlab.cee.redhat.com/PIT/roles/install-certs.git
+  scm: git

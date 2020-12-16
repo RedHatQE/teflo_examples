@@ -1,0 +1,6 @@
+---
+- name: install pytest framework
+  hosts: "{{ hosts }}"
+
+  roles:
+    - role: pytest-install

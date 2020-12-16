@@ -1,0 +1,20 @@
+---
+- name: build jenkins job
+  hosts: local
+
+  vars:
+    conf: "{{ jenkins_conf | default('auth.ini') }}"
+
+  tasks:
+    - name: install jjb
+      pip:
+        name: jenkins-job-builder
+
+    - name: build job using jjb
+      shell: "jenkins-jobs --conf {{ conf }} --ignore-cache update ../job.yml"
+      register: out
+
+    - name: build job using jjb output
+      debug:
+        var: out.stderr_lines
+        verbosity: 1

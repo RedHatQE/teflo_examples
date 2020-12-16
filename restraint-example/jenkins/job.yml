@@ -1,0 +1,66 @@
+---
+- project:
+    name: jobs
+    jobs:
+      - "RESTRAINT-EXAMPLE"
+
+- job-template:
+    name: RESTRAINT-EXAMPLE
+    project-type: pipeline
+    description: "Example job to install restraint framework & execute tests executed by teflo"
+    concurrent: true
+    logrotate:
+      numToKeep: 10
+    parameters:
+      - string:
+          name: AGENT
+          default: master
+          description: "The agent where the job should run on."
+      - string:
+          name: TEFLO_BRANCH
+          default: develop
+          description: "The branch to install teflo based on."
+      - choice:
+          name: LOG_LEVEL
+          choices:
+            - info
+            - debug
+          description: "Teflos logging level"
+      - string:
+          name: SCENARIO_REPO_URL
+          default:
+          description: "The git repository where the scenario files exists."
+      - string:
+          name: SCENARIO_REPO_BRANCH
+          default: master
+          description: "The git repository branch to clone for scenario files."
+      - bool:
+          name: TEARDOWN
+          default: true
+          description: "Flag to control if systems are deleted at end of run."
+      - string:
+          name: TEFLO_SETTINGS
+          default: ./teflo.cfg
+          description: "Absolute path to your teflo configuration file."
+      - string:
+          name: SSH_KEYS_DIR
+          default: ./keys
+          description: "Absolute path to the directory where your SSH keys are."
+      - string:
+          name: OS_NETWORK
+          description: "OpenStack internal network to connect instances to."
+      - string:
+          name: OS_FLOATING_IP_POOL
+          default: "10.8.240.0"
+          description: "OpenStack external network to connect instances to."
+      - string:
+          name: OS_KEYPAIR
+          description: "OpenStack keypair to inject into instances created."
+    pipeline-scm:
+      scm:
+        - git:
+            url:
+            branches:
+              - "origin/${{SCENARIO_REPO_BRANCH}}"
+      script-path: "jenkins/Jenkinsfile"
+      lightweight-checkout: true

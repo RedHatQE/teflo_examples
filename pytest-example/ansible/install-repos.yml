@@ -1,0 +1,12 @@
+---
+- name: install system repositories
+  hosts: "{{ hosts }}"
+
+  roles:
+    - role: oasis_roles.system_repositories
+      vars:
+        system_repositories_configs:
+          - name: base
+            baseurl: "{{ baseurl }}"
+            enabled: true
+            gpgcheck: no

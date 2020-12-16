@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<job>
+  <recipeSet>
+    <recipe id="1">
+      <task name="/kernel/misc/gdb-simple">
+        <fetch url="git://fedorapeople.org/home/fedora/bpeck/public_git/tests.git?master#kernel/misc/gdb-simple"/>
+      </task>
+    </recipe>
+  </recipeSet>
+</job>

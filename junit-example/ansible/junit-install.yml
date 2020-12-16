@@ -1,0 +1,6 @@
+---
+- name: install junit framework
+  hosts: "{{ hosts }}"
+
+  roles:
+    - role: junit-install

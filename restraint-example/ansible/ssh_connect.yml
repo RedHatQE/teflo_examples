@@ -1,0 +1,28 @@
+---
+- name: setup keys for SSH authentication
+  hosts: localhost
+
+  vars:
+    private_key: ../keys/test
+    public_key: ../keys/test.pub
+
+  tasks:
+    - name: setup key based ssh authentication between driver & client
+      include_role:
+        name: rywillia.ssh-copy-id
+      vars:
+        hostname: "{{ item }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+        ssh_public_key: "{{ public_key }}"
+      with_items:
+        - "{{ groups['client'] }}"
+
+    - name: copy private key to driver
+      copy:
+        src: "{{ private_key }}"
+        dest: ~/.ssh/id_rsa
+        mode: 0600
+      delegate_to: "{{ item }}"
+      with_items:
+        - "{{ groups['driver'] }}"

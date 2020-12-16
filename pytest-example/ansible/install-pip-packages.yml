@@ -1,0 +1,20 @@
+---
+- name: install python packages by pip
+  hosts: "{{ hosts }}"
+
+  tasks:
+    - name: Install latest pip packages
+      pip:
+        name: "{{ item }}"
+        state: latest
+      loop:
+        "{{ latest_packages }}"
+      when: latest_packages is defined
+
+    - name: Install version specific pip packages
+      pip:
+        name: "{{ item.name }}"
+        version: "{{ item.version }}"
+      loop:
+        "{{ version_packages }}"
+      when: version_packages is defined

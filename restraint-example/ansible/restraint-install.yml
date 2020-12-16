@@ -1,0 +1,6 @@
+---
+- name: install restraint framework
+  hosts: all
+
+  roles:
+    - role: restraint-install

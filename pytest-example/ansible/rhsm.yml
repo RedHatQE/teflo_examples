@@ -1,0 +1,18 @@
+---
+- name: register systems using red hat subscription manager
+  hosts: "{{ hosts }}"
+
+  tasks:
+    - name: register
+      import_role:
+        name: oasis_roles.rhsm
+      tags:
+        - register
+
+    - name: unregister
+      import_role:
+        name: oasis_roles.rhsm
+      vars:
+        rhsm_unregister: true
+      tags:
+        - unregister

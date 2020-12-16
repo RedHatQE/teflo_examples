@@ -1,0 +1,108 @@
+---
+name: pytest-example
+description: An example scenario for installing, configuring, and executing pytests
+
+provision:
+  - name: product_a
+    role: product
+    provider:
+      name: openstack
+      credential: openstack
+      image: rhel-7.5-server-x86_64-released
+      flavor: m1.small
+      networks:
+        - "{{ OS_NETWORK }}"
+      keypair: "{{ OS_KEYPAIR }}"
+    ansible_params:
+      ansible_user: cloud-user
+      ansible_ssh_private_key_file: "keys/{{ OS_KEYPAIR }}"
+
+  - name: client_a
+    role: clients
+    provider:
+      name: openstack
+      credential: openstack
+      image: rhel-7.5-server-x86_64-released
+      flavor: m1.small
+      networks:
+        - "{{ OS_NETWORK }}"
+      keypair: "{{ OS_KEYPAIR }}"
+    ansible_params:
+      ansible_user: cloud-user
+      ansible_ssh_private_key_file: "keys/{{ OS_KEYPAIR }}"
+
+  - name: client_b
+    role: clients
+    provider:
+      name: openstack
+      credential: openstack
+      image: rhel-7.5-server-x86_64-released
+      flavor: m1.small
+      networks:
+        - "{{ OS_NETWORK }}"
+      keypair: "{{ OS_KEYPAIR }}"
+    ansible_params:
+      ansible_user: cloud-user
+      ansible_ssh_private_key_file: "keys/{{ OS_KEYPAIR }}"
+
+orchestrate:
+  - name: ansible/install-repos.yml
+    description: "enable system repositories"
+    orchestrator: ansible
+    hosts: clients
+    ansible_options:
+      extra_vars:
+        baseurl: http://download.eng.bos.redhat.com/composes/released/RHEL-7/7.5/Server/x86_64/os/
+      become_user: root
+      become: True
+      become_method: sudo
+    ansible_galaxy_options:
+      role_file: roles.yml
+
+  - name: ansible/install-certs.yml
+    description: "install internal certificates"
+    orchestrator: ansible
+    hosts: clients
+    ansible_galaxy_options:
+      role_file: roles.yml
+
+  - name: ansible/pytest-install.yml
+    description: "install pytest framework on test clients"
+    orchestrator: ansible
+    hosts: clients
+    ansible_galaxy_options:
+      role_file: roles.yml
+
+  - name: ansible/install-pip-packages.yml
+    description: "install test dependency package"
+    orchestrator: ansible
+    hosts: clients
+    ansible_options:
+      extra_vars:
+        latest_packages:
+          - xmlrunner
+      become_user: root
+      become: True
+      become_method: sudo
+
+execute:
+  - name: pytest execution
+    description: "execute pytests on the clients"
+    hosts: clients
+    executor: runner
+    ignore_rc: False
+    git:
+      - repo: https://gitlab.cee.redhat.com/ccit/teflo/pytest-example.git
+        version: master
+        dest: /home/cloud-user/pytest
+    shell:
+      - chdir: /home/cloud-user/pytest/tests
+        command: python -m pytest test_sample.py --junit-xml test-report/suite1_results.xml
+      - chdir: /home/cloud-user/pytest/tests
+        command: python -m pytest sample_unittest.py --junit-xml test-report/suite2_results.xml
+        ignore_rc: True
+    artifacts:
+      - /home/cloud-user/pytest/tests/test-report/suite1_results.xml
+      - /home/cloud-user/pytest/tests/test-report/suite2_results.xml
+
+report:
