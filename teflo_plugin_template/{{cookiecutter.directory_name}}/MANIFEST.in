@@ -1,0 +1,9 @@
+include CHANGES LICENSE AUTHORS README.md
+recursive-include {{cookiecutter.directory_name}}/files *
+recursive-include {{cookiecutter.directory_name}}/templates *
+exclude setup.cfg
+prune docs/
+prune tests/.cache
+prune .git
+prune .gitignore
+
