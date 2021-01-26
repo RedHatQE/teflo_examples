@@ -6,20 +6,20 @@ description: define a teflo aws ssh keypair and ec2 resource to be provisioned
 provision:
 
   - name: test_aws_key_pair
-    role: client, test_driver
+    groups: client, test_driver
     provisioner: linchpin-wrapper
-    provider:
-      name: aws
-      credential: aws-creds
+    credential: aws-creds
+    resource_definitions:
+      name: test_aws_key_pair
       role: aws_ec2_key
       region: "{{ region | default('us-east-2') }}"
 
   - name: test_ci_test_client_a
-    role: client, test_driver
+    groups: client, test_driver
     provisioner: linchpin-wrapper
-    provider:
-      name: aws
-      credential: aws-creds
+    credential: aws-creds
+    resource_definitions:
+      name: test_ci_test_client_a
       flavor: t2.nano
       role: aws_ec2
       region: {{ region | default('us-east-2') }}

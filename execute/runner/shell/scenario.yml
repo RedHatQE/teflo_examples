@@ -5,7 +5,7 @@ description: orchestrate example using local host
 
 provision:
   - name: localhost
-    role: local
+    groups: local
     ip_address: 127.0.0.1
     ansible_params:
       ansible_connection: local
@@ -18,5 +18,20 @@ execute:
     shell:
       - command: "env > /tmp/tc01.log"
         chdir: /tmp
+      - command: |
+          cp SampleTest.xml  SampleTest_{ localhost.ip_address }.xml
+          cp SampleTest_{ localhost.ip_address }.xml .teflo/.results/artifacts/
     artifacts:
       - /tmp/tc01.log
+    artifact_locations:
+      - artifacts/SampleTest_{ localhost.ip_address }.xml
+    labels: ['exe1']
+
+  - name: Test running script
+    description: "Test running script during execute"
+    executor: runner
+    hosts: localhost
+    script:
+      - name: add_two_numbers.sh X=12 Y=12
+        ignore_rc: true
+    labels: ['exe2']

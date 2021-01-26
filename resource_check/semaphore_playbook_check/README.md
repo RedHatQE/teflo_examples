@@ -2,13 +2,21 @@
 
 ## Installation
 
-To utilize this example you must install teflo. You can refer to our 
-[installation](https://docs.engineering.redhat.com/display/CentralCI/Install+Teflo) page 
+To utilize this example you must install teflo.
+```bash
+pip intall teflo
+```
 
 
 ## Usage
-This example is meant to show how to use Teflo's resource check can be used to check the status of 
-systems/services that are monitored by Semaphore as well as system/services not monitored by Semaphore. 
+Copy this directory to the workspace where Teflo is installed. This example is meant to show how to use Teflo's 
+resource check can be used to check the status of systems/services that are monitored by Semaphore as well as 
+system/services not monitored by Semaphore. You will need to update the teflo.cfg with the api url of the system
+which maintains the services and system status
+
+```bash
+resource_check_endpoint=http:/abc.com/api/v1
+```
 
 Below is the contents of this resource check example directory
 ```bash
@@ -31,6 +39,7 @@ it might be referred to as SDF). This defines two sections, **resource_check** a
 The **resource_check** section defines what Teflo should check for.  
  
  * The *monitored_services* key takes a list services/systems being monitored by a status page like semaphore
+   User will have to edit the teflo.cfg to add the url for the monitoring tool (Teflo supports statuspage.io and semaphore)
  
  * The *playbook* key takes a path to a playbook, [non_semaphore_check.yml](custom_res_checks/non_semaphore_check.yml), 
    that defines a simple uri check for services/systems NOT being monitored by semaphore

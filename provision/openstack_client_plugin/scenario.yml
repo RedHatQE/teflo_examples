@@ -1,0 +1,20 @@
+---
+
+name: os-client-eg
+description: An example for os-client
+
+provision:
+  - name: test_client_a
+    groups: client, test_driver
+    provisioner: openstack-client
+    credential: openstack
+    server:
+      image: rhel-7.4-server-x86_64-released
+      flavor: m1.small
+      network:
+        - '{{ network }}'
+      max: 2
+      key_name: '{{ keypair }}'
+    ansible_params:
+      ansible_user: cloud-user
+      ansible_ssh_private_key_file: keys/{{ keypair }}

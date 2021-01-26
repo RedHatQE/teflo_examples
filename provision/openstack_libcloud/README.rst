@@ -1,16 +1,9 @@
 OpenStack
 =========
 
-This example demonstrates how you can define and use openstack machines within
-teflo.
-
-Prior to running this example, please make sure you have followed the steps
-for `installing teflo <http://teflo-dev-01.usersys.redhat.com/cbn/
-users/install.html>`_.
-
-Prior to running this example, please make sure you have followed the steps
-for `configuring teflo <http://teflo-dev-01.usersys.redhat.com/cbn/
-users/configuration.html>`_.
+This example demonstrates how you can define and provision openstack machines within
+teflo. Here the provisioner being used is openstack-libcloud, the native openstack
+provisioner available with teflo
 
 **ATTENTION**
 
@@ -18,22 +11,14 @@ This example below has teflo installed in a virtual environment named teflo.
 Please replace this virtual environment with the virtual environment you
 created for teflo if it differs.
 
-Pre-Run
--------
-
 First lets review the content of the `scenario descriptor file <scenario.yml>`_.
 This file contains a provision section with one host resource defined. You will
-see the machine requires a couple keys (*name*, *role*, *provider*). It is
+see the machine requires a couple keys (*name*, *role*, *provisioner*). It is
 highly recommended to define *ansible_params* key. This tells teflo about how
 ansible should connect to the machine.
 
-
-
 Run
 ---
-
-Option 1
-++++++++
 
 To provision the machine, please make sure you have set your openstack
 credentials properly within the `teflo.cfg <teflo.cfg>`_.
@@ -46,7 +31,17 @@ templated into the scenario descriptor file.
     (teflo) $ export network=<OPENSTACK_INTENRAL_NETWORK_NAME>
     (teflo) $ export keypair=<OPENSTACK_KEYPAIR>
 
-Once you have set those environment variables you can execute the following
+You will also need to put you ssh keys in the keys folder and set the permissions to 0600
+The name of this folder can be anything, it is a folder to store the ssh keys needed
+for provisioning
+
+.. code-block:: bash
+
+    (teflo) $ chmod 0600 ./keys
+    (teflo) $ export key_name=<key for creating beaker instances under the keys folder>
+
+
+Once you have set those environment variables  and ssh keys you can execute the following
 command to run teflo.
 
 .. code-block:: none
@@ -66,16 +61,3 @@ To cleanup the machine, just execute the following teflo command below.
 
 We pointed teflo to the updated descriptor file. This provides teflo with
 the updated information from the provision task.
-
-Option 2
-++++++++
-
-Within this directory is a script that wraps all the teflo commands to provide
-an easy way showing how to run teflo (for a demo purpose).
-
-You can run the script to provision/cleanup as follows:
-
-.. code-block:: none
-
-    # you will need to provide the data to the prompts
-    (teflo) $ ./run.sh

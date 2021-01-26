@@ -4,52 +4,51 @@ description: An example scenario for installing, configuring, and executing pyte
 
 provision:
   - name: product_a
-    role: product
-    provider:
-      name: openstack
-      credential: openstack
-      image: rhel-7.5-server-x86_64-released
-      flavor: m1.small
-      networks:
-        - "{{ OS_NETWORK }}"
-      keypair: "{{ OS_KEYPAIR }}"
+    groups: product
+    provisioner: openstack-libcloud
+    credential: openstack
+    image: rhel-7.5-server-x86_64-released
+    flavor: m1.small
+    networks:
+      - "{{ OS_NETWORK }}"
+    keypair: "{{ OS_KEYPAIR }}"
     ansible_params:
       ansible_user: cloud-user
       ansible_ssh_private_key_file: "keys/{{ OS_KEYPAIR }}"
 
   - name: client_a
-    role: clients
-    provider:
-      name: openstack
-      credential: openstack
-      image: rhel-7.5-server-x86_64-released
-      flavor: m1.small
-      networks:
-        - "{{ OS_NETWORK }}"
-      keypair: "{{ OS_KEYPAIR }}"
+    groups: clients
+    provisioner: openstack-libcloud
+    credential: openstack
+    image: rhel-7.5-server-x86_64-released
+    flavor: m1.small
+    networks:
+      - "{{ OS_NETWORK }}"
+    keypair: "{{ OS_KEYPAIR }}"
     ansible_params:
       ansible_user: cloud-user
       ansible_ssh_private_key_file: "keys/{{ OS_KEYPAIR }}"
 
   - name: client_b
-    role: clients
-    provider:
-      name: openstack
-      credential: openstack
-      image: rhel-7.5-server-x86_64-released
-      flavor: m1.small
-      networks:
-        - "{{ OS_NETWORK }}"
-      keypair: "{{ OS_KEYPAIR }}"
+    groups: clients
+    provisioner: openstack-libcloud
+    credential: openstack
+    image: rhel-7.5-server-x86_64-released
+    flavor: m1.small
+    networks:
+      - "{{ OS_NETWORK }}"
+    keypair: "{{ OS_KEYPAIR }}"
     ansible_params:
       ansible_user: cloud-user
       ansible_ssh_private_key_file: "keys/{{ OS_KEYPAIR }}"
 
 orchestrate:
-  - name: ansible/install-repos.yml
+  - name: orch_task1
     description: "enable system repositories"
     orchestrator: ansible
     hosts: clients
+    ansible_playbook:
+      name: ansible/install-repos.yml
     ansible_options:
       extra_vars:
         baseurl: http://download.eng.bos.redhat.com/composes/released/RHEL-7/7.5/Server/x86_64/os/
@@ -59,24 +58,30 @@ orchestrate:
     ansible_galaxy_options:
       role_file: roles.yml
 
-  - name: ansible/install-certs.yml
+  - name: orch_task2
     description: "install internal certificates"
     orchestrator: ansible
     hosts: clients
+    ansible_playbook:
+      name: ansible/install-certs.yml
     ansible_galaxy_options:
       role_file: roles.yml
 
-  - name: ansible/pytest-install.yml
+  - name: orch_task3
     description: "install pytest framework on test clients"
     orchestrator: ansible
     hosts: clients
+    ansible_playbook:
+      name: ansible/pytest-install.yml
     ansible_galaxy_options:
       role_file: roles.yml
 
-  - name: ansible/install-pip-packages.yml
+  - name: orch_task4
     description: "install test dependency package"
     orchestrator: ansible
     hosts: clients
+    ansible_playbook:
+      name: ansible/install-pip-packages.yml
     ansible_options:
       extra_vars:
         latest_packages:
@@ -92,17 +97,17 @@ execute:
     executor: runner
     ignore_rc: False
     git:
-      - repo: https://gitlab.cee.redhat.com/ccit/teflo/pytest-example.git
+      - repo: https://github.com/RedHatQE/teflo_examples.git
         version: master
-        dest: /home/cloud-user/pytest
+        dest: /home/cloud-user/teflo_examples
     shell:
-      - chdir: /home/cloud-user/pytest/tests
+      - chdir: /home/cloud-user/teflo_examples/pytest-example/tests
         command: python -m pytest test_sample.py --junit-xml test-report/suite1_results.xml
-      - chdir: /home/cloud-user/pytest/tests
+      - chdir: /home/cloud-user/teflo_examples/pytest-example/tests
         command: python -m pytest sample_unittest.py --junit-xml test-report/suite2_results.xml
         ignore_rc: True
     artifacts:
-      - /home/cloud-user/pytest/tests/test-report/suite1_results.xml
-      - /home/cloud-user/pytest/tests/test-report/suite2_results.xml
+      - /home/cloud-user/teflo_examples/pytest-example/tests/test-report/suite1_results.xml
+      - /home/cloud-user/teflo_examples/pytest-example/tests/test-report/suite2_results.xml
 
 report:

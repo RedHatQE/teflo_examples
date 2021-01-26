@@ -17,17 +17,15 @@ First lets review the content of the `scenario descriptor file <scenario.yml>`_.
 This file contains a provision section which contains one host resource
 defined. For the case of keeping this example simple, the host resource is
 the localhost where teflo will be run. This way we can avoid any provisioning
-of machines. The execute section contains one execute task to be run. It
-defines a shell key which has a list of test commands to be run. For this
-simple example it will just print the environment variables to a file. Once
-the test is finished running, teflo will archive the artifacts that were
-defined.
+of machines. The execute section contains two execute task to be run. First tasks
+runs a shell command and collects some logs. The second task runs a script to
+add two numbers
+
+This example makes use of labels feature provided by teflo.
+You can run or skip a task by providing its label
 
 Run
 ---
-
-Option 1
-++++++++
 
 To execute tests against the machines under test, just run the following
 teflo command.
@@ -39,14 +37,17 @@ teflo command.
 You will see teflo skip over provisioning the machine due to its a static
 machine. Then execute task will start to run the defined test.
 
-Option 2
-++++++++
+To execute just the first task
 
-Within this directory is a script that wraps all the teflo commands to provide
-an easy way showing how to run teflo (for a demo purpose).
-
-You can run the script to execute as follows:
 
 .. code-block:: none
 
-    (teflo) $ ./run.sh
+    (teflo) $ teflo run -t execute -s scenario.yml -l exe1
+
+
+To skip the first execute tasks and run only the second one
+
+
+.. code-block:: none
+
+    (teflo) $ teflo run -t execute -s scenario.yml -sl exe1

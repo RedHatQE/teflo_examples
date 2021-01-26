@@ -12,7 +12,7 @@ can configure existing tools that teflo uses.
 ansible
 -------
 
-Ansible is heavily used throughout teflo. It is the primary tool used for
+Ansible is the native orchestrator used by teflo. It is the primary tool used for
 performing configuration against remote machines. It is recommend that you
 create an ansible configuration file to be used during a teflo run. This
 allows you to control how you want to configure ansible and teflo will just
@@ -25,8 +25,8 @@ docs.ansible.com/ansible/latest/installation_guide/intro_configuration.html>`_
 teflo
 ------
 
-Teflo requires you to create a configuration file to control various settings
-teflo needs. This is where you can define default settings teflo accepts,
+Teflo requires you to create a configuration file teflo.cfg to control various
+settings teflo needs. This is where you can define default settings teflo accepts,
 provider credentials, orchestrator settings and much more. Please see the
 `teflo <teflo>`_ directory for a sample teflo configuration file. The
 example file will have all the available configuration settings you can set.
