@@ -1,0 +1,76 @@
+def cloneRepo() {
+    checkout([$class: 'GitSCM',
+    branches: [[name: 'merge-requests/${gitlabMergeRequestIid}']],
+    doGenerateSubmoduleConfigurations: false,
+    extensions: [[$class: 'PreBuildMerge', options: [mergeRemote: 'origin', mergeTarget: '${gitlabTargetBranch}']]],
+    submoduleCfg: [],
+    userRemoteConfigs: [[name: 'origin', refspec: '+refs/heads/*:refs/remotes/origin/* +refs/merge-requests/*/head:refs/remotes/origin/merge-requests/*', url: '{{cookiecutter.plugin_url}}']]])
+}
+
+pipeline {
+    agent { label "carbon-slave-rh8" }
+    triggers {
+        gitlab(
+            triggerOnPush: false,
+            triggerOnMergeRequest: true,
+            triggerOpenMergeRequestOnPush: "source",
+            triggerOnNoteRequest: true,
+            noteRegex: "runnning_unit_test",
+            skipWorkInProgressMergeRequest: true,
+            ciSkip: false,
+            setBuildDescription: true,
+            addNoteOnMergeRequest: true,
+            addCiMessage: true,
+            addVoteOnMergeRequest: true,
+            acceptMergeRequestOnSuccess: false,
+            pendingBuildName: "cbn_{{cookiecutter.plugin_name}}",
+            cancelPendingBuildsOnUpdate: false)
+    }
+    options {
+            gitLabConnection('gitlab-cee')
+    }
+    stages {
+
+        stage('clone') {
+            steps {
+                cleanWs()
+                cloneRepo()
+            }
+        }
+
+        stage('env') {
+            steps {
+                sh """
+                virtualenv venv
+                source venv/bin/activate
+                pip install -r test-requirements.txt
+                """
+            }
+        }
+        stage('tests') {
+
+            steps {
+                sh """
+                source venv/bin/activate
+                make test-functional
+                """
+            }
+        }
+
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: 'tests/coverage/**'
+        }
+        failure {
+        updateGitlabCommitStatus name: 'cbn_{{cookiecutter.plugin_name}}', state: 'failed'
+        addGitLabMRComment comment: """The job failed ${BUILD_URL}"""
+      }
+        success {
+        updateGitlabCommitStatus name: 'cbn_{{cookiecutter.plugin_name}}', state: 'success'
+        addGitLabMRComment comment: """The job passed ${BUILD_URL}"""
+      }
+    }
+}
+
+

@@ -1,0 +1,12 @@
+{
+    "teflo_plugin_type": "provisioner",
+    "directory_name": "teflo_provisionerX_plugin",
+    "plugin_name": "provx_plugin",
+    "plugin_class_name": "ProvXProvisionerPlugin",
+    "test_class_name": "test_{{cookiecutter.plugin_name}}",
+    "plugin_description": "teflo provisioner plugin",
+    "jenkins_ci_job_link": "<your ci job link>",
+    "plugin_url": "<plugin url on gitlab/github>",
+    "authors": "CCIT tools dev team <ci-ops-qe@redhat.com>"
+}
+
