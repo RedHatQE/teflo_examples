@@ -74,5 +74,5 @@ teflo_plugin_template
 
 This is a template that user can use to get an empty directory
 structure that can be used to develop a teflo plugin
-Please see the `teflo_plugin_template <teflo-plugin_template>`_ directory
+Please see the `teflo_plugin_template <teflo_plugin_template>`_ directory
 
