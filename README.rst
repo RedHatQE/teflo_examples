@@ -2,7 +2,7 @@ Teflo Examples
 ===============
 
 The primary purpose of this repository is to provide you with working
-`teflo <https://code.engineering.redhat.com/gerrit/gitweb?p=teflo.git>`_
+`teflo <teflo.readthedocs.io/en/latest/>`_
 examples. The examples are light weight and simple. The goal here is for you
 to use these as a getting started with teflo. Once you have a understanding
 on how teflo works using them, you can easily expand upon them to build your
