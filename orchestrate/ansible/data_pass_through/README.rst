@@ -25,21 +25,29 @@ section).
 Run
 ---
 
-Option 1
-++++++++
-
 To configure the machines under test, just run the following teflo command.
 
 .. code-block:: none
 
-    (teflo) $ teflo run -t provision -t orchestrate -s scenario.yml
+    (teflo) $ teflo run -t provision -t orchestrate -s scenario.yml -sl data_pass
 
 You will see teflo skip over provisioning the machine due to its a static
 machine. Orchestrate task will start and execute both the actions defined
 against the hosts it was declared against. This example will first installing
 product a and then go on to install product b. Product b installation requires
 data from product a. The product a playbook will set facts that are persistent
-and can be accessed by the product b install playbook.
+and can be accessed by the product b install playbook. This will just run the
+first two orchestrate task without label data_pass
+
+To run third tasks with lable 'data_pass'
+
+.. code-block:: none
+
+    (teflo) $ teflo run -t orchestrate -s .teflo/.results/results.yml -w . -l data_pass
+
+This will run task orc_task3, where you run a script by passing data about the provisioned host
+as parameters. WE have declared user_name as a metadata of the provisioned host , which we will use
+as input to the python script along with the provisioned hosts's ip address
 
 To cleanup the machine, just execute the following teflo command below.
 
@@ -51,15 +59,5 @@ We pointed teflo to the updated descriptor file. This provides teflo with
 the updated information from the provision/orchestrate task. Please note
 nothing will be deleted due to the host resource was static.
 
-Option 2
-++++++++
 
-Within this directory is a script that wraps all the teflo commands to provide
-an easy way showing how to run teflo (for a demo purpose).
 
-You can run the script to orchestrate/cleanup as follows:
-
-.. code-block:: none
-
-    # you will need to provide the data to the prompts
-    (teflo) $ ./run.sh

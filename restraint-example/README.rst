@@ -84,7 +84,7 @@ Below are a list of steps demonstrating how to run the scenario by teflo.
     (teflo) $ pip install teflo
 
     # tell teflo where your teflo.cfg is (if outside this repository)
-    (teflo) $ export TEFLO_SETTINGS=~/secret/teflo.cfg
+    (teflo) $ export TEFLO_SETTINGS=<path to teflo.cfg>/teflo.cfg
 
     # tell teflo about additional data to be substituted into the scenario
     # descriptor

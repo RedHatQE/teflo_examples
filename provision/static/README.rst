@@ -4,10 +4,6 @@ Static
 This example demonstrates how you can define and use static machines within
 teflo.
 
-Prior to running this example, please make sure you have followed the steps
-for `installing teflo <http://teflo-dev-01.usersys.redhat.com/cbn/
-users/install.html>`_.
-
 **ATTENTION**
 
 This example below has teflo installed in a virtual environment named teflo.
@@ -26,8 +22,14 @@ ansible should connect to the machine.
 Run
 ---
 
-Option 1
-++++++++
+You will need to put you ssh keys in the keys folder and set the permissions to 0600
+The name of this folder can be anything, it is a folder to store the ssh keys needed
+for provisioning
+
+.. code-block:: bash
+
+    (teflo) $ chmod 0600 ./keys
+    (teflo) $ export key_name=<key for creating beaker instances under the keys folder>
 
 To provision the machine, just execute the following teflo command below.
 
@@ -47,16 +49,3 @@ cleanup, teflo will not delete the machine. You can call cleanup as follows:
 As you can see we gave a different scenario file. At the end of each teflo
 run a new results file gets generated. This file is an exact copy of the
 initial scenario file just with additional information appeneded.
-
-Option 2
-++++++++
-
-Within this directory is a script that wraps all the teflo commands to provide
-an easy way showing how to run teflo (for a demo purpose).
-
-You can run the script to provision/cleanup as follows:
-
-.. code-block:: none
-
-    # you will need to provide the data to the prompts
-    (teflo) $ ./run.sh

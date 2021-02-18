@@ -4,46 +4,43 @@ description: An example scenario for installing/configuring restraint
 
 provision:
   - name: test_driver
-    role: driver
-    provider:
-      name: openstack
-      credential: openstack
-      image: rhel-7.4-server-x86_64-released
-      flavor: m1.small
-      networks:
-        - "{{ OS_NETWORK }}"
-      floating_ip_pool: "{{ OS_FLOATING_IP_POOL }}"
-      keypair: "{{ OS_KEYPAIR }}"
+    groups: driver
+    provisioner: openstack-libcloud
+    credential: openstack
+    image: rhel-7.4-server-x86_64-released
+    flavor: m1.small
+    networks:
+      - "{{ OS_NETWORK }}"
+    floating_ip_pool: "{{ OS_FLOATING_IP_POOL }}"
+    keypair: "{{ OS_KEYPAIR }}"
     ansible_params:
       ansible_user: cloud-user
       ansible_ssh_private_key_file: "keys/{{ OS_KEYPAIR }}"
 
   - name: test_client_a
-    role: client
-    provider:
-      name: openstack
-      credential: openstack
-      image: rhel-7.4-server-x86_64-released
-      flavor: m1.small
-      networks:
-        - "{{ OS_NETWORK }}"
-      floating_ip_pool: "{{ OS_FLOATING_IP_POOL }}"
-      keypair: "{{ OS_KEYPAIR }}"
+    groups: client
+    provisioner: openstack-libcloud
+    credential: openstack
+    image: rhel-7.4-server-x86_64-released
+    flavor: m1.small
+    networks:
+      - "{{ OS_NETWORK }}"
+    floating_ip_pool: "{{ OS_FLOATING_IP_POOL }}"
+    keypair: "{{ OS_KEYPAIR }}"
     ansible_params:
       ansible_user: cloud-user
       ansible_ssh_private_key_file: "keys/{{ OS_KEYPAIR }}"
 
   - name: test_client_b
-    role: client
-    provider:
-      name: openstack
-      credential: openstack
-      image: rhel-7.4-server-x86_64-released
-      flavor: m1.small
-      networks:
-        - "{{ OS_NETWORK }}"
-      floating_ip_pool: "{{ OS_FLOATING_IP_POOL }}"
-      keypair: "{{ OS_KEYPAIR }}"
+    groups: client
+    provisioner: openstack-libcloud
+    credential: openstack
+    image: rhel-7.4-server-x86_64-released
+    flavor: m1.small
+    networks:
+      - "{{ OS_NETWORK }}"
+    floating_ip_pool: "{{ OS_FLOATING_IP_POOL }}"
+    keypair: "{{ OS_KEYPAIR }}"
     ansible_params:
       ansible_user: cloud-user
       ansible_ssh_private_key_file: "keys/{{ OS_KEYPAIR }}"
@@ -92,7 +89,7 @@ orchestrate:
     ansible_galaxy_options:
       role_file: roles.yml
 
-  - name: orc_task3
+  - name: orc_task4
     description: "install restraint framework on driver and clients"
     orchestrator: ansible
     hosts: localhost
@@ -111,14 +108,14 @@ execute:
     executor: runner
     hosts: driver
     git:
-      - repo: https://gitlab.cee.redhat.com/ccit/teflo/restraint-example.git
+      - repo: https://github.com/RedHatQE/teflo_examples.git
         version: master
-        dest: ~/restraint-example
+        dest: ~/teflo_examples
     shell:
       - command: /usr/bin/restraint -vvv --host 1=root@{ test_client_a.ip_address }:8081 --job ./test_sample.xml
-        chdir: ~/restraint-example/tests
+        chdir: ~/teflo_examples/restraint-example/tests
       - command: /usr/bin/restraint -vvv --host 1=root@{ test_client_b.ip_address }:8081 --job ./test_sample.xml
-        chdir: ~/restraint-example/tests
+        chdir: ~/teflo_examples/restraint-example/tests
     artifacts:
-      - ~/restraint-example/tests/test_*
+      - ~/teflo_examples/restraint-example/tests/test_*
 

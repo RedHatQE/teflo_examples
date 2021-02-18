@@ -4,31 +4,29 @@ description: An example scenario for junit
 
 provision:
   - name: test_client_a
-    role: client
-    provider:
-      name: openstack
-      credential: openstack
-      image: rhel-7.4-server-x86_64-released
-      flavor: m1.small
-      networks:
-        - "{{ OS_NETWORK }}"
-      floating_ip_pool: "{{ OS_FLOATING_IP_POOL }}"
-      keypair: "{{ OS_KEYPAIR }}"
+    groups: client
+    provisioner: openstack-libcloud
+    credential: openstack
+    image: rhel-7.4-server-x86_64-released
+    flavor: m1.small
+    networks:
+      - "{{ OS_NETWORK }}"
+    floating_ip_pool: "{{ OS_FLOATING_IP_POOL }}"
+    keypair: "{{ OS_KEYPAIR }}"
     ansible_params:
       ansible_user: cloud-user
       ansible_ssh_private_key_file: "keys/{{ OS_KEYPAIR }}"
 
   - name: test_client_b
-    role: client
-    provider:
-      name: openstack
-      credential: openstack
-      image: rhel-7.5-server-x86_64-released
-      flavor: m1.small
-      networks:
-        - "{{ OS_NETWORK }}"
-      floating_ip_pool: "{{ OS_FLOATING_IP_POOL }}"
-      keypair: "{{ OS_KEYPAIR }}"
+    groups: client
+    provisioner: openstack-libcloud
+    credential: openstack
+    image: rhel-7.5-server-x86_64-released
+    flavor: m1.small
+    networks:
+      - "{{ OS_NETWORK }}"
+    floating_ip_pool: "{{ OS_FLOATING_IP_POOL }}"
+    keypair: "{{ OS_KEYPAIR }}"
     ansible_params:
       ansible_user: cloud-user
       ansible_ssh_private_key_file: "keys/{{ OS_KEYPAIR }}"
@@ -90,14 +88,14 @@ execute:
     executor: runner
     description: execute junit test on client
     git:
-      - repo: https://gitlab.cee.redhat.com/ccit/teflo/junit-example.git
+      - repo: https://github.com/RedHatQE/teflo_examples.git
         version: master
-        dest: /home/cloud-user/junit
+        dest: /home/cloud-user/teflo_examples
     shell:
-      - chdir: /home/cloud-user/junit/tests
+      - chdir: /home/cloud-user/teflo_examples/junit-example/tests
         command: javac Sample.java; javac UnitTestRunner.java; javac CustomExecutionListener.java; javac SampleTest.java; java UnitTestRunner SampleTest
     artifacts:
-      - /home/cloud-user/junit/tests/*.log
-      - /home/cloud-user/junit/tests/*.xml
+      - /home/cloud-user/teflo_examples/junit-example/tests/*.log
+      - /home/cloud-user/teflo_examples/junit-example/tests/*.xml
 
 report:

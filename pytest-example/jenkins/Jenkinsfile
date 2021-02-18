@@ -3,7 +3,7 @@ dataFolder = ".teflo"
 scenarioFileLts = "${dataFolder}/.results/results.yml"
 workspace = "."
 archive = ".teflo/**"
-scenarioDescriptor = "scenario.yml"
+scenarioDescriptor = "scenario_upshift.yml"
 
 def installTeflo(String branch) {
     echo "Installing teflo.."

@@ -2,9 +2,8 @@ junit-example
 =============
 
 This repository demonstrates how teflo can install junit framework on test
-machines and execute tests. Teflo is the conductor which glues all the pieces
-together. In this example junit is installed from an ansible role
-(junit-install). The role also configures the necessary environment variables
+machines and execute tests.In this example junit is installed from an ansible
+role(junit-install). The role also configures the necessary environment variables
 needed when running the tests. Prior to installing junit it will provision the
 2 test machines and register the necessary ones with red hat subscription
 manager.
@@ -83,7 +82,7 @@ Below are a list of steps demonstrating how to run the scenario by teflo.
     (teflo) $ pip install teflo
 
     # tell teflo where your teflo.cfg is (if outside this repository)
-    (teflo) $ export TEFLO_SETTINGS=~/secret/teflo.cfg
+    (teflo) $ export TEFLO_SETTINGS=<path to teflo.cfg>/teflo.cfg
 
     # tell teflo about additional data to be substituted into the scenario
     # descriptor

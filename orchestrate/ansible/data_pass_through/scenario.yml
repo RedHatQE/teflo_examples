@@ -5,8 +5,10 @@ description: orchestrate example showing data pass through
 
 provision:
   - name: localhost
-    role: local
+    groups: local
     ip_address: 127.0.0.1
+    metadata:
+      user_name: 'teflo_user'
     ansible_params:
       ansible_connection: local
 
@@ -29,4 +31,47 @@ orchestrate:
     hosts: localhost
      ansible_playbook:
        name: ansible/install_product_b.yml
+
+  - name: orch_task3
+    orchestrator: ansible
+    description: "orch task to run extra args as a part script"
+    hosts: localhost
+    ansible_script:
+      name: scripts/hello_world.py '{ localhost.metadata.user_name}' '{ localhost.ip_address }'
+      executable: python
+    lables: ['data_pass']
+
+    #provision:
+#  - name: host01
+#    role: node
+#    provider:
+#      name: openstack
+#      ...
+#    ip_address:
+#      public: 1.1.1.1
+#      private: 192.168.10.10
+#    metadata:
+#      key1: 'value1'
+#      key2: 'value2'
+#      ...
+#    ansible_params:
+#      ansible_user: cloud-user
     
+#  - name: orc_task1
+#    description: run configure playbook and do something with ip
+#    orchestrator: ansible
+#    hosts: host01
+#    ansible_playbook:
+#      name: ansible/configure_task_01.yml
+#    ansible_options:
+#      extra_vars:
+#        priv_ip: '{ host01.ip_address.private }'
+#
+#  - name: orc_task2
+#    description: run configure bash script and do something with metadata
+#    orchestrator: ansible
+#    hosts: host01
+#    ansible_script:
+#      name: scripts/configure_task_02.sh
+#    ansible_options:
+#      extra_args: X={ host01.metadata.key1 } Y={ host01.metadata.key2 }

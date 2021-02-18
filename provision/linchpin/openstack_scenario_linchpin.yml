@@ -5,23 +5,23 @@ description: define a teflo host openstack resource to be provisioned using Linc
 
 provision:
   - name: openstack-node
-    role: node
+    groups: node
     provisioner: linchpin-wrapper
-    provider:
-      name: openstack
-      credential: openstack-creds
-      image: rhel-7.5-server-x86_64-released
-      flavor: m1.small
-      networks:
-        - '{{ network }}'
-      keypair: '{{ keypair }}'
-      additional_volumes:
-        - name: "data-volume"
-          size: 1
-          device_name: "/dev/vdb"
-        - name: "log-volume"
-          size: 2
-          device_name: "/dev/vdc"
+    credential: openstack-creds
+    resource_group_type: openstack
+    resource_definitions:
+      - image: rhel-7.5-server-x86_64-released
+        flavor: m1.small
+        networks:
+          - '{{ network }}'
+        keypair: '{{ key_name }}'
+        additional_volumes:
+          - name: "data-volume"
+            size: 1
+            device_name: "/dev/vdb"
+          - name: "log-volume"
+            size: 2
+            device_name: "/dev/vdc"
     ansible_params:
       ansible_user: cloud-user
-      ansible_ssh_private_key_file: "keys/{{ keypair }}"
+      ansible_ssh_private_key_file: "keys/{{ key_name}}"

@@ -25,9 +25,6 @@ section).
 Run
 ---
 
-Option 1
-++++++++
-
 To configure the machines under test, just run the following teflo command.
 
 .. code-block:: none
@@ -55,15 +52,4 @@ To cleanup the machine, just execute the following teflo command below.
 We pointed teflo to the updated descriptor file. This provides teflo with
 the updated information from the provision/orchestrate task.
 
-Option 2
-++++++++
 
-Within this directory is a script that wraps all the teflo commands to provide
-an easy way showing how to run teflo (for a demo purpose).
-
-You can run the script to orchestrate/cleanup as follows:
-
-.. code-block:: none
-
-    # you will need to provide the data to the prompts
-    (teflo) $ ./run.sh
