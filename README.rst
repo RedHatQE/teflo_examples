@@ -17,11 +17,11 @@ each one.
     ├── configuration
     ├── e2e
     ├── execute
-    ├── lib
     ├── orchestrate
     ├── provision
     ├── report
-    └── resource_check
+    ├── resource_check
+    └── teflo_plugin_template
 
 
 configuration
@@ -43,12 +43,6 @@ execute
 
 This directory contains examples on how you can use teflos execute task.
 Please see the `execute <execute>`_ directory for more details.
-
-lib
----
-
-This directory can be ignored. It contains helper functions used throughout
-the examples.
 
 orchestrate
 -----------
@@ -74,3 +68,11 @@ resource_check
 This directory contains examples on how you can use teflos resource check
 functionality. Please see the `resource check <resource_check>`_ directory
 for more details.
+
+teflo_plugin_template
+---------------------
+
+This is a template that user can use to get an empty directory
+structure that can be used to develop a teflo plugin
+Please see the `teflo_plugin_template <teflo-plugin_template>`_ directory
+
