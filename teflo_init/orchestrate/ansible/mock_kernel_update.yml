@@ -1,0 +1,8 @@
+---
+- name: mock kernel update
+  hosts: "{{ hosts }}"
+
+  tasks:
+    - name: kernel update (fake)
+      debug:
+        msg: "kernel successfully updated!"

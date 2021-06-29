@@ -76,3 +76,9 @@ This is a template that user can use to get an empty directory
 structure that can be used to develop a teflo plugin
 Please see the `teflo_plugin_template <teflo_plugin_template>`_ directory
 
+teflo_init
+----------
+
+This directory contains examples for *teflo init* command.
+Please see the `Teflo Quickstart Doc <https://teflo.readthedocs.io/en/latest/users/quickstart.html>`_
+for the usage of this command.
