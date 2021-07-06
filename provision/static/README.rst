@@ -15,7 +15,7 @@ Pre-Run
 
 First lets review the content of the `scenario descriptor file <scenario.yml>`_.
 This file contains a provision section with one host resource defined. Static
-machines only require a couple keys (*name*, *role*, *ip_address*). It is highly
+machines only require a couple keys (*name*, *groups*, *ip_address*). It is highly
 recommended to define *ansible_params* key. This tells teflo about how
 ansible should connect to the machine.
 
